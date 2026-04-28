@@ -14,10 +14,26 @@ type Props = {
 export default function Dashboard({ projects, onNewProject }: Props) {
   const isEmpty = projects.length === 0;
 
+  const [allTasks, setAllTasks] = React.useState<
+    { id: string; projectSlug: string; status: string }[]
+  >([]);
+
+  React.useEffect(() => {
+    try {
+      const raw = localStorage.getItem("taskboard_tasks");
+      if (raw) setAllTasks(JSON.parse(raw));
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const totalTasks = allTasks.length;
+  const completedTasks = allTasks.filter((t) => t.status === "done").length;
+
   const stats = [
-    { label: "Projects", value: projects.length, icon: Layers, color: "text-orange-500" },
-    { label: "Total Tasks", value: 0, icon: CheckCircle2, color: "text-sky-500" },
-    { label: "Completed", value: 0, icon: CheckCircle2, color: "text-emerald-500" },
+    { label: "Projects", value: projects.length, icon: Layers, color: "text-[#FF5500]" },
+    { label: "Total Tasks", value: totalTasks, icon: CheckCircle2, color: "text-sky-500" },
+    { label: "Completed", value: completedTasks, icon: CheckCircle2, color: "text-emerald-500" },
     { label: "Due Today", value: 0, icon: Clock, color: "text-amber-500" },
   ];
 
@@ -28,7 +44,7 @@ export default function Dashboard({ projects, onNewProject }: Props) {
         <div>
           <h1 className="text-4xl font-bold tracking-tight leading-none text-stone-800">
             My{" "}
-            <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
+            <span className="text-[#FF5500]">
               Projects
             </span>
           </h1>
@@ -40,7 +56,7 @@ export default function Dashboard({ projects, onNewProject }: Props) {
         </div>
         <Button
           onClick={onNewProject}
-          className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-2xl text-sm font-semibold gap-2 px-6 py-2.5 cursor-pointer border-0 shadow-lg shadow-orange-200 hover:shadow-orange-300 transition-all duration-300"
+          className="bg-[#FF5500] hover:bg-[#E04A00] text-white rounded-2xl text-sm font-semibold gap-2 px-6 py-2.5 cursor-pointer border-0 shadow-lg shadow-[#FF5500]/20 hover:shadow-[#FF5500]/30 transition-all duration-300"
         >
           <Plus size={15} strokeWidth={2.5} />
           New Project
@@ -50,8 +66,8 @@ export default function Dashboard({ projects, onNewProject }: Props) {
       {/* Empty State */}
       {isEmpty ? (
         <div className="border-2 border-dashed border-stone-200 rounded-3xl flex flex-col items-center justify-center py-24 gap-6 bg-white">
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-100 flex items-center justify-center">
-            <FolderOpen size={28} className="text-orange-400" />
+          <div className="w-20 h-20 rounded-2xl bg-[#FF5500]/5 border border-[#FF5500]/10 flex items-center justify-center">
+            <FolderOpen size={28} className="text-[#FF5500]" />
           </div>
           <div className="text-center space-y-2">
             <p className="text-stone-800 text-xl font-semibold tracking-tight">
@@ -64,7 +80,7 @@ export default function Dashboard({ projects, onNewProject }: Props) {
           </div>
           <button
             onClick={onNewProject}
-            className="mt-2 inline-flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-sm font-semibold shadow-lg shadow-orange-200 hover:shadow-orange-300 transition-all duration-300 cursor-pointer"
+            className="mt-2 inline-flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-[#FF5500] hover:bg-[#E04A00] text-white text-sm font-semibold shadow-lg shadow-[#FF5500]/20 hover:shadow-[#FF5500]/30 transition-all duration-300 cursor-pointer"
           >
             <Plus size={15} strokeWidth={2.5} />
             Create your first project
@@ -80,9 +96,9 @@ export default function Dashboard({ projects, onNewProject }: Props) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {projects.map((project) => (
               <Link key={project.id} href={`/tasks/${project.slug}`}>
-                <div className="relative bg-white border border-stone-200/80 rounded-2xl p-6 cursor-pointer hover:border-orange-200 hover:shadow-lg hover:shadow-orange-50 transition-all duration-300 min-h-[160px] flex flex-col justify-between group overflow-hidden">
+                <div className="relative bg-white border border-stone-200/80 rounded-2xl p-6 cursor-pointer hover:border-[#FF5500]/30 hover:shadow-lg hover:shadow-[#FF5500]/5 transition-all duration-300 min-h-[160px] flex flex-col justify-between group overflow-hidden">
                   {/* Hover accent bar */}
-                  <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-orange-400 to-amber-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-2xl" />
+                  <div className="absolute top-0 left-0 right-0 h-[3px] bg-[#FF5500] opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-2xl" />
 
                   <div className="flex items-start justify-between">
                     <span className="text-lg font-semibold leading-snug tracking-tight text-stone-800 pr-3">
@@ -94,16 +110,18 @@ export default function Dashboard({ projects, onNewProject }: Props) {
                   <div className="flex items-end justify-between mt-5">
                     <div className="space-y-2.5">
                       <p className="text-sm text-stone-500">
-                        <span className="text-stone-800 font-semibold">0</span>{" "}
+                        <span className="text-stone-800 font-semibold">
+                          {allTasks.filter((t) => t.projectSlug === project.slug).length}
+                        </span>{" "}
                         tasks
                       </p>
-                      <span className="inline-block px-3 py-1 rounded-lg bg-orange-50 text-orange-600 text-[11px] uppercase tracking-wider font-semibold border border-orange-100">
+                      <span className="inline-block px-3 py-1 rounded-lg bg-[#FF5500]/5 text-[#FF5500] text-[11px] uppercase tracking-wider font-semibold border border-[#FF5500]/15">
                         {project.tag}
                       </span>
                     </div>
                     <ArrowUpRight
                       size={20}
-                      className="text-stone-300 group-hover:text-orange-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300"
+                      className="text-stone-300 group-hover:text-[#FF5500] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300"
                     />
                   </div>
                 </div>
@@ -116,7 +134,7 @@ export default function Dashboard({ projects, onNewProject }: Props) {
             {stats.map((stat) => (
               <div
                 key={stat.label}
-                className="bg-white border border-stone-200/80 rounded-2xl px-5 py-4 hover:shadow-md hover:shadow-orange-50 transition-all duration-300"
+                className="bg-white border border-stone-200/80 rounded-2xl px-5 py-4 hover:shadow-md hover:shadow-[#FF5500]/5 transition-all duration-300"
               >
                 <div className="flex items-center gap-2 mb-2">
                   <stat.icon size={14} className={stat.color} />

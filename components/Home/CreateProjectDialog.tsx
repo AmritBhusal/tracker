@@ -98,8 +98,8 @@ export default function CreateProjectDialog({
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="bg-white border border-stone-200 rounded-2xl text-stone-800 max-w-md p-0 gap-0 overflow-hidden shadow-2xl shadow-stone-200/50">
-        {/* Gradient top accent bar */}
-        <div className="h-1.5 w-full bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500" />
+        {/* Top accent bar */}
+        <div className="h-1.5 w-full bg-[#FF5500]" />
 
         <div className="px-8 pt-7 pb-8">
           <DialogHeader className="mb-7">
@@ -126,7 +126,7 @@ export default function CreateProjectDialog({
                 }}
                 onKeyDown={(e) => e.key === "Enter" && handleCreate()}
                 placeholder="e.g. Website Redesign"
-                className="bg-stone-50 border-stone-200 rounded-xl text-stone-800 placeholder:text-stone-400 focus-visible:ring-2 focus-visible:ring-orange-300 focus-visible:border-orange-400 text-sm h-11 px-4 transition-all"
+                className="bg-stone-50 border-stone-200 rounded-xl text-stone-800 placeholder:text-stone-400 focus-visible:ring-2 focus-visible:ring-[#FF5500]/30 focus-visible:border-[#FF5500] text-sm h-11 px-4 transition-all"
               />
               {error && (
                 <p className="text-xs text-red-500 font-medium">{error}</p>
@@ -148,8 +148,8 @@ export default function CreateProjectDialog({
                       onClick={() => setSelectedTag(tag)}
                       className={`px-3.5 py-2 text-[11px] uppercase tracking-wider font-semibold rounded-xl border transition-all duration-200 cursor-pointer ${
                         isSelected
-                          ? "bg-gradient-to-r from-orange-500 to-amber-500 text-white border-transparent shadow-md shadow-orange-200"
-                          : "bg-stone-50 text-stone-500 border-stone-200 hover:bg-orange-50 hover:text-orange-600 hover:border-orange-200"
+                          ? "bg-[#FF5500] text-white border-transparent shadow-md shadow-[#FF5500]/20"
+                          : "bg-stone-50 text-stone-500 border-stone-200 hover:bg-[#FF5500]/5 hover:text-[#FF5500] hover:border-[#FF5500]/30"
                       }`}
                     >
                       {tag}
@@ -171,7 +171,7 @@ export default function CreateProjectDialog({
             <Button
               type="button"
               onClick={handleCreate}
-              className="flex-1 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-xl text-sm font-semibold cursor-pointer h-11 border-0 shadow-lg shadow-orange-200 hover:shadow-orange-300 transition-all duration-300"
+              className="flex-1 bg-[#FF5500] hover:bg-[#E04A00] text-white rounded-xl text-sm font-semibold cursor-pointer h-11 border-0 shadow-lg shadow-[#FF5500]/20 hover:shadow-[#FF5500]/30 transition-all duration-300"
             >
               Create Project
             </Button>
