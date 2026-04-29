@@ -2,8 +2,9 @@
 
 import { useState, useMemo, useCallback } from "react";
 import Link from "next/link";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft, Plus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import Board from "@/components/Tasks/Board";
 import CreateTaskDialog from "@/components/Tasks/CreateTaskDialog";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
@@ -34,6 +35,15 @@ export default function TasksPage({
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogDefaultStatus, setDialogDefaultStatus] = useState<TaskStatus>("todo");
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredTasks = useMemo(() => {
+    if (!searchQuery.trim()) return tasks;
+    return tasks.filter((t) => 
+      t.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      t.description.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [tasks, searchQuery]);
 
   const handleTaskCreated = useCallback(
     (task: Task) => setAllTasks((prev) => [...prev, task]),
@@ -93,18 +103,29 @@ export default function TasksPage({
             </div>
           )}
         </div>
-        <Button
-          variant="brand"
-          onClick={() => openDialog("todo")}
-          className="gap-2 px-7 py-3 text-base"
-        >
-          <Plus size={17} strokeWidth={2.5} />
-          Add Task
-        </Button>
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
+            <Input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search tasks..."
+              className="pl-9 h-12 w-64 bg-surface border-amber-200/80 rounded-xl text-stone-800 placeholder:text-stone-400 focus-visible:ring-2 focus-visible:ring-[#FF5500]/30 focus-visible:border-[#FF5500] shadow-sm shadow-amber-100/40"
+            />
+          </div>
+          <Button
+            variant="brand"
+            onClick={() => openDialog("todo")}
+            className="gap-2 px-7 py-3 text-base h-12"
+          >
+            <Plus size={17} strokeWidth={2.5} />
+            Add Task
+          </Button>
+        </div>
       </div>
 
       <Board
-        tasks={tasks}
+        tasks={filteredTasks}
         onAddToColumn={(status) => openDialog(status)}
         onEditTask={(task) => openDialog(task.status, task)}
         onMoveTask={handleTaskMoved}
