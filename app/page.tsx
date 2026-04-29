@@ -1,23 +1,18 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import CreateProjectDialog, { type Project } from "@/components/Home/CreateProjectDialog";
+import { useState } from "react";
+import CreateProjectDialog from "@/components/Home/CreateProjectDialog";
 import Dashboard from "@/components/Home/Dashboard";
-
-const STORAGE_KEY = "taskboard_projects";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { STORAGE_KEYS } from "@/lib/constants";
+import type { Project } from "@/types";
 
 export default function Home() {
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useLocalStorage<Project[]>(
+    STORAGE_KEYS.PROJECTS,
+    []
+  );
   const [dialogOpen, setDialogOpen] = useState(false);
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setProjects(JSON.parse(raw));
-    } catch {
-      setProjects([]);
-    }
-  }, []);
 
   const handleProjectCreated = (project: Project) => {
     setProjects((prev) => [...prev, project]);
@@ -34,6 +29,7 @@ export default function Home() {
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         onProjectCreated={handleProjectCreated}
+        existingProjects={projects}
       />
     </>
   );
