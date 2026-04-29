@@ -27,6 +27,7 @@ export default function TasksPage({
     () => projects.find((p) => p.slug === slug) ?? null,
     [projects, slug]
   );
+
   const tasks = useMemo(
     () => allTasks.filter((t) => t.projectSlug === slug),
     [allTasks, slug]
@@ -37,11 +38,14 @@ export default function TasksPage({
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Filter tasks when the user types something in the search box
   const filteredTasks = useMemo(() => {
-    if (!searchQuery.trim()) return tasks;
-    return tasks.filter((t) => 
-      t.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      t.description.toLowerCase().includes(searchQuery.toLowerCase())
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return tasks;
+    return tasks.filter(
+      (t) =>
+        t.title.toLowerCase().includes(q) ||
+        t.description.toLowerCase().includes(q)
     );
   }, [tasks, searchQuery]);
 
@@ -76,12 +80,14 @@ export default function TasksPage({
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-8 py-12">
-      <div className="flex items-start justify-between mb-10">
+    <div className="max-w-6xl mx-auto px-4 sm:px-8 py-6 sm:py-12">
+      {/* Header area — collapses to a single column on phones */}
+      <div className="flex flex-col gap-4 mb-6 sm:mb-10">
+        {/* Top row: back link + project info */}
         <div>
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-base font-medium text-stone-400 hover:text-[#FF5500] transition-colors mb-4 group"
+            className="inline-flex items-center gap-1.5 text-sm sm:text-base font-medium text-stone-400 hover:text-[#FF5500] transition-colors mb-3 sm:mb-4 group"
           >
             <ArrowLeft
               size={16}
@@ -89,34 +95,36 @@ export default function TasksPage({
             />
             Back to Projects
           </Link>
-          <h1 className="text-4xl font-bold tracking-tight text-stone-800">
+          <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-stone-800">
             {project ? project.name : "Project"}
           </h1>
           {project && (
-            <div className="flex items-center gap-3.5 mt-3">
-              <span className="inline-block px-3.5 py-1.5 rounded-lg bg-[#FF5500]/5 text-[#FF5500] text-sm uppercase tracking-wider font-semibold border border-[#FF5500]/15">
+            <div className="flex flex-wrap items-center gap-2.5 sm:gap-3.5 mt-2 sm:mt-3">
+              <span className="inline-block px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-lg bg-[#FF5500]/5 text-[#FF5500] text-xs sm:text-sm uppercase tracking-wider font-semibold border border-[#FF5500]/15">
                 {project.tag}
               </span>
-              <span className="text-base text-stone-500">
+              <span className="text-sm sm:text-base text-stone-500">
                 {tasks.length} task{tasks.length !== 1 ? "s" : ""}
               </span>
             </div>
           )}
         </div>
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
+
+        {/* Search + Add button row */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-3">
+          <div className="relative flex-1 sm:flex-none">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none" />
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search tasks..."
-              className="pl-9 h-12 w-64 bg-surface border-amber-200/80 rounded-xl text-stone-800 placeholder:text-stone-400 focus-visible:ring-2 focus-visible:ring-[#FF5500]/30 focus-visible:border-[#FF5500] shadow-sm shadow-amber-100/40"
+              className="pl-9 h-11 sm:h-12 w-full sm:w-64 bg-surface border-amber-200/80 rounded-xl text-stone-800 placeholder:text-stone-400 focus-visible:ring-2 focus-visible:ring-[#FF5500]/30 focus-visible:border-[#FF5500] shadow-sm shadow-amber-100/40"
             />
           </div>
           <Button
             variant="brand"
             onClick={() => openDialog("todo")}
-            className="gap-2 px-7 py-3 text-base h-12"
+            className="gap-2 px-5 sm:px-7 py-3 text-sm sm:text-base h-11 sm:h-12"
           >
             <Plus size={17} strokeWidth={2.5} />
             Add Task

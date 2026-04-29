@@ -4,10 +4,11 @@ import TaskCard from "./TaskCard";
 import { STATUS_LIST } from "@/lib/constants";
 import type { Task, TaskStatus } from "@/types";
 
-const COLUMN_ICONS: Record<TaskStatus, { icon: React.ElementType; color: string }> = {
-  todo:          { icon: Circle,       color: "text-stone-400" },
-  "in-progress": { icon: Loader2,      color: "text-[#FF5500]" },
-  done:          { icon: CheckCircle2,  color: "text-emerald-500" },
+// Each column gets its own icon + color so we can tell them apart at a glance
+const COLUMN_STYLE: Record<TaskStatus, { icon: React.ElementType; color: string }> = {
+  todo:          { icon: Circle,      color: "text-stone-400" },
+  "in-progress": { icon: Loader2,     color: "text-[#FF5500]" },
+  done:          { icon: CheckCircle2, color: "text-emerald-500" },
 };
 
 type Props = {
@@ -26,21 +27,22 @@ export default function Board({
   onDeleteTask,
 }: Props) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
       {STATUS_LIST.map((col) => {
-        const columnTasks = tasks.filter((t) => t.status === col.value);
-        const { icon: Icon, color } = COLUMN_ICONS[col.value];
+        const colTasks = tasks.filter((t) => t.status === col.value);
+        const { icon: Icon, color } = COLUMN_STYLE[col.value];
 
         return (
           <div key={col.value} className="flex flex-col">
-            <div className="flex items-center justify-between mb-4 px-1">
-              <div className="flex items-center gap-3">
+            {/* Column header */}
+            <div className="flex items-center justify-between mb-3 sm:mb-4 px-1">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <Icon size={19} className={color} />
-                <span className="text-lg font-semibold text-stone-700">
+                <span className="text-base sm:text-lg font-semibold text-stone-700">
                   {col.label}
                 </span>
                 <span className="text-sm font-bold text-stone-400 bg-amber-100/60 rounded-lg px-2.5 py-0.5 min-w-[26px] text-center">
-                  {columnTasks.length}
+                  {colTasks.length}
                 </span>
               </div>
               <button
@@ -52,19 +54,20 @@ export default function Board({
               </button>
             </div>
 
-            <div className="flex-1 bg-amber-50/40 border border-amber-200/50 rounded-2xl p-4 space-y-3.5 min-h-[240px]">
-              {columnTasks.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full min-h-[200px] text-center">
-                  <p className="text-base text-stone-400">No tasks yet</p>
+            {/* Card list */}
+            <div className="flex-1 bg-amber-50/40 border border-amber-200/50 rounded-2xl p-3 sm:p-4 space-y-3 sm:space-y-3.5 min-h-[180px] sm:min-h-[240px]">
+              {colTasks.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full min-h-[140px] sm:min-h-[200px] text-center">
+                  <p className="text-sm sm:text-base text-stone-400">No tasks yet</p>
                   <button
                     onClick={() => onAddToColumn(col.value)}
-                    className="mt-2.5 text-base text-[#FF5500] font-medium hover:underline underline-offset-2 cursor-pointer"
+                    className="mt-2 text-sm sm:text-base text-[#FF5500] font-medium hover:underline underline-offset-2 cursor-pointer"
                   >
                     + Add one
                   </button>
                 </div>
               ) : (
-                columnTasks.map((task) => (
+                colTasks.map((task) => (
                   <TaskCard
                     key={task.id}
                     task={task}

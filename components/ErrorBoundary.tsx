@@ -16,11 +16,11 @@ export class ErrorBoundary extends Component<Props, State> {
     if (!this.state.error) return this.props.children;
 
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] px-8 text-center">
-        <h2 className="text-2xl font-bold text-stone-800 mb-3">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 sm:px-8 text-center">
+        <h2 className="text-xl sm:text-2xl font-bold text-stone-800 mb-3">
           Something went wrong
         </h2>
-        <p className="text-stone-500 mb-6 max-w-md">
+        <p className="text-sm sm:text-base text-stone-500 mb-6 max-w-md">
           {this.state.error.message || "An unexpected error occurred."}
         </p>
         <button

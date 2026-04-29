@@ -36,36 +36,38 @@ export default function CreateProjectDialog({
   const [selectedTag, setSelectedTag] = useState<string>("Engineering");
   const [error, setError] = useState("");
 
-  const handleClose = (isOpen: boolean) => {
-    if (!isOpen) {
-      setProjectName("");
-      setSelectedTag("Engineering");
-      setError("");
-    }
-    onOpenChange(isOpen);
-  };
+  function resetForm() {
+    setProjectName("");
+    setSelectedTag("Engineering");
+    setError("");
+  }
 
-  const handleCreate = () => {
+  function handleClose(isOpen: boolean) {
+    if (!isOpen) resetForm();
+    onOpenChange(isOpen);
+  }
+
+  function handleCreate() {
     const trimmed = projectName.trim();
     if (!trimmed) {
       setError("Project name cannot be empty.");
       return;
     }
 
-    // Build a URL-safe slug, appending a suffix if one already exists
-    const baseSlug = trimmed
+    // Build a URL-safe slug, appending a number if it's already taken
+    const base = trimmed
       .toLowerCase()
       .replace(/\s+/g, "-")
       .replace(/[^a-z0-9-]/g, "");
 
-    const takenSlugs = new Set(existingProjects.map((p) => p.slug));
-    let slug = baseSlug;
-    let suffix = 1;
-    while (takenSlugs.has(slug)) {
-      slug = `${baseSlug}-${suffix++}`;
+    const taken = new Set(existingProjects.map((p) => p.slug));
+    let slug = base;
+    let n = 1;
+    while (taken.has(slug)) {
+      slug = `${base}-${n++}`;
     }
 
-    const newProject: Project = {
+    const project: Project = {
       id: uuidv4(),
       name: trimmed,
       slug,
@@ -73,27 +75,27 @@ export default function CreateProjectDialog({
       createdAt: new Date().toISOString(),
     };
 
-    onProjectCreated(newProject);
+    onProjectCreated(project);
     handleClose(false);
     router.push(`/tasks/${slug}`);
-  };
+  }
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="bg-surface border border-amber-200 rounded-2xl text-stone-800 max-w-md p-0 gap-0 overflow-hidden shadow-2xl shadow-amber-200/30">
+      <DialogContent className="bg-surface border border-amber-200 rounded-2xl text-stone-800 max-w-[calc(100vw-2rem)] sm:max-w-md p-0 gap-0 overflow-hidden shadow-2xl shadow-amber-200/30">
         <div className="h-1.5 w-full bg-[#FF5500]" />
-        <div className="px-8 pt-7 pb-8">
-          <DialogHeader className="mb-7">
-            <DialogTitle className="text-2xl font-bold tracking-tight text-stone-800">
+        <div className="px-5 sm:px-8 pt-5 sm:pt-7 pb-6 sm:pb-8">
+          <DialogHeader className="mb-5 sm:mb-7">
+            <DialogTitle className="text-xl sm:text-2xl font-bold tracking-tight text-stone-800">
               New Project
             </DialogTitle>
-            <DialogDescription className="text-stone-500 text-base mt-1.5">
+            <DialogDescription className="text-stone-500 text-sm sm:text-base mt-1.5">
               Give your project a name and a category.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-6">
-            <div className="space-y-3">
+          <div className="space-y-5 sm:space-y-6">
+            <div className="space-y-2.5 sm:space-y-3">
               <Label className="text-sm uppercase tracking-[0.12em] font-bold text-stone-500">
                 Project Name
               </Label>
@@ -106,14 +108,14 @@ export default function CreateProjectDialog({
                 }}
                 onKeyDown={(e) => e.key === "Enter" && handleCreate()}
                 placeholder="e.g. Website Redesign"
-                className="bg-amber-50/50 border-amber-200 rounded-xl text-stone-800 placeholder:text-stone-400 focus-visible:ring-2 focus-visible:ring-[#FF5500]/30 focus-visible:border-[#FF5500] text-base h-12 px-4 transition-all"
+                className="bg-amber-50/50 border-amber-200 rounded-xl text-stone-800 placeholder:text-stone-400 focus-visible:ring-2 focus-visible:ring-[#FF5500]/30 focus-visible:border-[#FF5500] text-sm sm:text-base h-11 sm:h-12 px-4 transition-all"
               />
               {error && (
                 <p className="text-sm text-red-500 font-medium">{error}</p>
               )}
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2.5 sm:space-y-3">
               <Label className="text-sm uppercase tracking-[0.12em] font-bold text-stone-500">
                 Category
               </Label>
@@ -125,12 +127,12 @@ export default function CreateProjectDialog({
             </div>
           </div>
 
-          <DialogFooter className="mt-8 flex flex-row gap-3 sm:gap-3">
+          <DialogFooter className="mt-6 sm:mt-8 flex flex-row gap-3">
             <Button
               variant="brand-outline"
               type="button"
               onClick={() => handleClose(false)}
-              className="flex-1 h-12 text-base"
+              className="flex-1 h-11 sm:h-12 text-sm sm:text-base"
             >
               Cancel
             </Button>
@@ -138,7 +140,7 @@ export default function CreateProjectDialog({
               variant="brand"
               type="button"
               onClick={handleCreate}
-              className="flex-1 h-12 text-base rounded-xl"
+              className="flex-1 h-11 sm:h-12 text-sm sm:text-base rounded-xl"
             >
               Create Project
             </Button>
